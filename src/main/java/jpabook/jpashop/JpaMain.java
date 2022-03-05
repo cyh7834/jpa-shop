@@ -1,9 +1,15 @@
 package jpabook.jpashop;
 
+import jpabook.jpashop.domain.Member;
+import jpabook.jpashop.domain.Order;
+import jpabook.jpashop.domain.OrderItem;
+import jpabook.jpashop.domain.OrderStatus;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import java.time.LocalDateTime;
 
 public class JpaMain {
     public static void main(String[] args) {
@@ -14,7 +20,27 @@ public class JpaMain {
         tx.begin();
 
         try {
+            Member member = new Member();
+            member.setName("최윤호");
+            member.setCity("서울");
+            member.setZipcode("02258");
+            member.setStreet("중랑구");
+            em.persist(member);
 
+            Order order = new Order();
+            order.setOrderDate(LocalDateTime.now());
+            order.setStatus(OrderStatus.ORDER);
+            order.setMember(member);
+            em.persist(order);
+
+            em.flush();
+            em.clear();
+
+            String jpql= "select o From Order o where o.member.id = :memberId";
+
+            Order findOrder = em.createQuery(jpql, Order.class).setParameter("memberId", 1L).getSingleResult();
+
+            System.out.println("findOrder.getOrderDate() = " + findOrder.getOrderDate());
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
