@@ -36,9 +36,13 @@ public class JpaMain {
             em.flush();
             em.clear();
 
+            System.out.println("===================================");
+
             String jpql= "select o From Order o where o.member.id = :memberId";
 
             Order findOrder = em.createQuery(jpql, Order.class).setParameter("memberId", 1L).getSingleResult();
+
+            System.out.println("===================================");
 
             System.out.println("findOrder.getOrderDate() = " + findOrder.getOrderDate());
             tx.commit();
