@@ -22,9 +22,6 @@ public class JpaMain {
         try {
             Member member = new Member();
             member.setName("최윤호");
-            member.setCity("서울");
-            member.setZipcode("02258");
-            member.setStreet("중랑구");
             em.persist(member);
 
             Order order = new Order();
