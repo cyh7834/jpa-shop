@@ -1,15 +1,11 @@
 package jpabook.jpashop;
 
 import jpabook.jpashop.domain.Member;
-import jpabook.jpashop.domain.Order;
-import jpabook.jpashop.domain.OrderItem;
-import jpabook.jpashop.domain.OrderStatus;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import java.time.LocalDateTime;
+import java.util.List;
 
 public class JpaMain {
     public static void main(String[] args) {
@@ -20,20 +16,30 @@ public class JpaMain {
         tx.begin();
 
         try {
-            Member member = new Member();
-            member.setName("최윤호");
-            em.persist(member);
-
-            Order order = new Order();
-            order.setOrderDate(LocalDateTime.now());
-            order.setStatus(OrderStatus.ORDER);
-            order.setMember(member);
-            em.persist(order);
+            for (int i = 0; i < 100; i++) {
+                Member member = new Member();
+                member.setName("member " + i);
+                em.persist(member);
+            }
 
             em.flush();
             em.clear();
 
             System.out.println("===================================");
+
+            List<Member> resultList = em.createQuery("select m from Member as m order by m.name", Member.class)
+                    .setFirstResult(10)
+                    .setMaxResults(30)
+                    .getResultList();
+
+            System.out.println("===================================");
+
+
+            for (Member member : resultList) {
+                System.out.println("member.getName() = " + member.getName());
+            }
+
+            /*System.out.println("===================================");
 
             String jpql= "select o From Order o where o.member.id = :memberId";
 
@@ -41,7 +47,7 @@ public class JpaMain {
 
             System.out.println("===================================");
 
-            System.out.println("findOrder.getOrderDate() = " + findOrder.getOrderDate());
+            System.out.println("findOrder.getOrderDate() = " + findOrder.getOrderDate());*/
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
