@@ -1,10 +1,8 @@
 package jpabook.jpashop;
 
 import jpabook.jpashop.domain.Member;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
+
+import javax.persistence.*;
 import java.util.List;
 
 public class JpaMain {
@@ -39,15 +37,12 @@ public class JpaMain {
                 System.out.println("member.getName() = " + member.getName());
             }
 
-            /*System.out.println("===================================");
+            List<String> query1 = em.createQuery("select function('group_concat', m.name) from Member m", String.class)
+                    .getResultList();
 
-            String jpql= "select o From Order o where o.member.id = :memberId";
-
-            Order findOrder = em.createQuery(jpql, Order.class).setParameter("memberId", 1L).getSingleResult();
-
-            System.out.println("===================================");
-
-            System.out.println("findOrder.getOrderDate() = " + findOrder.getOrderDate());*/
+            for (String s : query1) {
+                System.out.println("s = " + s);
+            }
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
