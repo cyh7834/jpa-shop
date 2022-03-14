@@ -1,8 +1,10 @@
 package jpabook.jpashop;
 
 import jpabook.jpashop.domain.Member;
+import jpabook.jpashop.domain.Order;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class JpaMain {
@@ -14,35 +16,35 @@ public class JpaMain {
         tx.begin();
 
         try {
-            for (int i = 0; i < 100; i++) {
-                Member member = new Member();
-                member.setName("member " + i);
-                em.persist(member);
-            }
+            Member member = new Member();
+            member.setName("member1");
+            em.persist(member);
+
+            Order order1 = new Order();
+            order1.setOrderDate(LocalDateTime.now());
+            order1.setMember(member);
+            em.persist(order1);
+
+            Order order2 = new Order();
+            order2.setOrderDate(LocalDateTime.now());
+            order2.setMember(member);
+
+            em.persist(order2);
 
             em.flush();
             em.clear();
 
             System.out.println("===================================");
 
-            List<Member> resultList = em.createQuery("select m from Member as m order by m.name", Member.class)
-                    .setFirstResult(10)
-                    .setMaxResults(30)
+            List<Order> resultList = em.createQuery("select o from Order o join fetch o.member", Order.class)
                     .getResultList();
 
+            for (Order newOrder : resultList) {
+                System.out.println("member1.getName() = " + newOrder.getOrderDate());
+            }
             System.out.println("===================================");
 
 
-            for (Member member : resultList) {
-                System.out.println("member.getName() = " + member.getName());
-            }
-
-            List<String> query1 = em.createQuery("select function('group_concat', m.name) from Member m", String.class)
-                    .getResultList();
-
-            for (String s : query1) {
-                System.out.println("s = " + s);
-            }
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
